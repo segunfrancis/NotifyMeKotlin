@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonNotify: Button
     private lateinit var buttonUpdate: Button
     private lateinit var buttonCancel: Button
+    private lateinit var buttonInboxStyle: Button
     private lateinit var mNotifyManager: NotificationManager
     private val PRIMARY_CHANNEL_ID = "primary_notification_channel"
     private val NOTIFICATION_ID: Int = 0
@@ -45,7 +46,12 @@ class MainActivity : AppCompatActivity() {
         buttonCancel.setOnClickListener {
             cancelNotification()
         }
-        setNotificationButtonState(true, false, false)
+
+        buttonInboxStyle = findViewById(R.id.inbox_style)
+        buttonInboxStyle.setOnClickListener {
+            inboxStyleUpdateNotification()
+        }
+        setNotificationButtonState(true, false, false, false)
 
         registerReceiver(mReceiver, IntentFilter(ACTION_UPDATE_NOTIFICATION))
     }
@@ -57,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         val notifyBuilder: NotificationCompat.Builder = getNotificationBuilder()
         notifyBuilder.addAction(R.drawable.ic_update, "Update Notification", updatePendingIntent)
         mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build())
-        setNotificationButtonState(false, true, true)
+        setNotificationButtonState(false, true, true, true)
     }
 
     private fun createNotificationChannel() {
@@ -106,7 +112,7 @@ class MainActivity : AppCompatActivity() {
             **/
         )
         mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build())
-        setNotificationButtonState(false, false, true)
+        setNotificationButtonState(false, false, true, false)
     }
 
 
@@ -115,16 +121,29 @@ class MainActivity : AppCompatActivity() {
         setNotificationButtonState(
             isNotifyEnabled = true,
             isUpdateEnabled = false,
-            isCancelEnabled = false
+            isCancelEnabled = false,
+            isInboxStyleEnabled = true
         )
+    }
+
+    private fun inboxStyleUpdateNotification() {
+        val notifyBuilder = getNotificationBuilder()
+        notifyBuilder.setStyle(NotificationCompat.InboxStyle()
+            .addLine("First Line").addLine("Second Line").addLine("Third Line")
+            .setBigContentTitle("Notification Updated!")
+            .setSummaryText("The inbox style notification looks like this"))
+        mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build())
+        setNotificationButtonState(false, false, true, false)
     }
 
     private fun setNotificationButtonState(isNotifyEnabled: Boolean,
                                            isUpdateEnabled: Boolean,
-                                           isCancelEnabled: Boolean) {
+                                           isCancelEnabled: Boolean,
+                                           isInboxStyleEnabled: Boolean) {
         buttonNotify.isEnabled = isNotifyEnabled
         buttonUpdate.isEnabled = isUpdateEnabled
         buttonCancel.isEnabled = isCancelEnabled
+        buttonInboxStyle.isEnabled = isInboxStyleEnabled
     }
 
     override fun onDestroy() {
@@ -132,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    inner class NotificationReceiver() : BroadcastReceiver() {
+    inner class NotificationReceiver : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
             updateNotification()
