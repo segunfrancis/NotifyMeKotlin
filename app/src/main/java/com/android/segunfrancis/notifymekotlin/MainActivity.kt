@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mNotifyManager: NotificationManager
     private val PRIMARY_CHANNEL_ID = "primary_notification_channel"
     private val NOTIFICATION_ID: Int = 0
-    private val ACTION_UPDATE_NOTIFICATION: String = "com.example.android.notifyme.ACTION_UPDATE_NOTIFICATION"
+    private val ACTION_UPDATE_NOTIFICATION: String = "com.android.segunfrancis.notifymekotlin.ACTION_UPDATE_NOTIFICATION"
     private var mReceiver = NotificationReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,9 +55,9 @@ class MainActivity : AppCompatActivity() {
         val updatePendingIntent = PendingIntent.getBroadcast(this,
             NOTIFICATION_ID, updateIntent, PendingIntent.FLAG_ONE_SHOT)
         val notifyBuilder: NotificationCompat.Builder = getNotificationBuilder()
+        notifyBuilder.addAction(R.drawable.ic_update, "Update Notification", updatePendingIntent)
         mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build())
         setNotificationButtonState(false, true, true)
-        notifyBuilder.addAction(R.drawable.ic_update, "Update Notification", updatePendingIntent)
     }
 
     private fun createNotificationChannel() {
@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    inner class NotificationReceiver : BroadcastReceiver() {
+    inner class NotificationReceiver() : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
             updateNotification()
